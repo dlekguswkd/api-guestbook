@@ -5,13 +5,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.javaex.service.GuestbookService;
+import com.javaex.uti.JsonResult;
 import com.javaex.vo.GuestVo;
 
 @RestController
@@ -21,64 +27,71 @@ public class GuestbookController {
 	private GuestbookService guestbookService;
 
 
-	// http://localhost:8888/guestbook3/addlist
+	// http://localhost:9000/api/persons
+	// http://localhost:3000/addlist
 	/* 리스트 (등록폼)*/
-	@RequestMapping(value="/addlist", method= {RequestMethod.GET, RequestMethod.POST})
-	public String list(Model model) {
-		System.out.println("PhonebookController.addList()");
+	@GetMapping("/api/persons")
+	public JsonResult addList() {
+		System.out.println("GuestbookController.addList()");
 		
 		List<GuestVo> guestList = guestbookService.exeGetGuestList();
-		
-		// 한다리 건너서 넣기 (데이터 보내기)
-		model.addAttribute("guestList", guestList);
-		
-		return "addList";
-		
+
+		return JsonResult.success(guestList);
 	}
 	
-	// http://localhost:8888/guestbook3/insert?name=~&password=~&content=~
+	// http://localhost:9000/api/persons
 	/* 등록 */
-	@RequestMapping(value="/insert", method= {RequestMethod.GET, RequestMethod.POST})
-	public String insert(@ModelAttribute GuestVo guestVo) {
+	@PostMapping("/api/persons")
+	public JsonResult insert(@RequestBody GuestVo guestVo) {
 		
 		System.out.println("guestbookController.insert()");
 		
 		guestbookService.exeInsertGuest(guestVo);
 
-		//리스트로 리다이렉트
-		return "redirect:/addlist";
+		if(guestVo == null) {
+			return JsonResult.fail("등록에 실패했습니다.");
+		}else { //등록됨
+			return JsonResult.success(guestVo);
+		}
 		
 	}
 	
 	// ---------------------------------------------------------------------------------
-	// http://localhost:8888/guestbook3/deleteform?no=~
+	// http://localhost:9000/api/persons/{no}/delete
 	/* 삭제폼 */
-	@RequestMapping(value="deleteform", method= {RequestMethod.GET, RequestMethod.POST})
-	public String deleteForm(@RequestParam(value="no") int no , Model model) {
+	@GetMapping("/api/persons/{no}/delete")
+	public JsonResult deleteForm(@PathVariable(value="no") int no) {
 		
 		System.out.println("guestbookController.deleteForm()");
 	
 		GuestVo guestVo = guestbookService.exeGetGuestOne(no);
 
-		model.addAttribute("guestVo", guestVo);
-		
-		return "deleteForm";
+		if(guestVo == null) {
+			return JsonResult.fail("번호가 없습니다.");
+			
+		}else {
+			return JsonResult.success(guestVo);
+		}
 		
 	}
 	
-	// http://localhost:8888/guestbook3/delete?
+	// http://localhost:9000/api/persons/~
 	/* 삭제 */
-	@RequestMapping(value="delete", method= {RequestMethod.GET, RequestMethod.POST})
-	public String delete(@RequestParam(value="no") int no , 
-						 @RequestParam(value="password") String password) {
+	@DeleteMapping("/api/persons/{no}")
+	public JsonResult delete(@PathVariable(value="no") int no , 
+							@PathVariable(value="password") String password) {
 		
 		System.out.println("guestbookController.delete()");
 		
 		int count = guestbookService.exeGuestDelete(no, password);
-		System.out.println(count);
-
 		
-		return "redirect:/addlist";
+		if(count != 1) {	// 실패 (삭제안됨)
+			return JsonResult.fail("해당번호가 없습니다.");
+			
+		}else {				// 성공 (삭제됨) 
+			return JsonResult.success(count);
+		}
+		
 	} 
 	
 	
