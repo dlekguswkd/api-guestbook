@@ -46,12 +46,12 @@ public class GuestbookController {
 		
 		System.out.println("guestbookController.insert()");
 		
-		guestbookService.exeInsertGuest(guestVo);
+		int count = guestbookService.exeInsertGuest(guestVo);
 
-		if(guestVo == null) {
+		if(count != 0) {
 			return JsonResult.fail("등록에 실패했습니다.");
 		}else { //등록됨
-			return JsonResult.success(guestVo);
+			return JsonResult.success(count);
 		}
 		
 	}
