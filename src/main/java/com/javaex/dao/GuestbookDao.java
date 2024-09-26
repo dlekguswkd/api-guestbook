@@ -34,18 +34,6 @@ public class GuestbookDao {
 		return count;
 	}
 
-	/* 사람 1명 정보 가져오기 */
-	public GuestVo getGuestOne(int no) {
-
-		System.out.println("GuestbookDao.getGuestOne()");
-
-		GuestVo guestVo = sqlSession.selectOne("guestbook.selectOne", no);
-
-		System.out.println(guestVo);
-
-		return guestVo;
-
-	}
 	
 	/* 삭제 */
 	public int deleteGuest(int no, String password) {

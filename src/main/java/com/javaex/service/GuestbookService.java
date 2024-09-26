@@ -34,14 +34,6 @@ public class GuestbookService {
 		
 	}
 	
-	/* 삭제폼 1명 정보 가져오기 */
-	public GuestVo exeGetGuestOne (int no) {	
-		System.out.println("GuestbookService.exeGetGuestOne()");
-		
-		GuestVo guestVo = guestbookDao.getGuestOne(no);
-		
-		return guestVo;
-	}
 	
 	/* 삭제 */
 	public int exeGuestDelete(int no, String password) {

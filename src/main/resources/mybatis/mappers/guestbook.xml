@@ -25,18 +25,6 @@
 		]]>
 	</insert>
 
-	<!-- 1명 정보 가져오기 (삭제폼) -->
-	<select id="selectOne" parameterType="int" resultType="com.javaex.vo.GuestVo">
-		<![CDATA[
-			select 	no, 
-				    name, 
-			        password, 
-			        content,
-			        reg_date regDate
-			from guest
-			where no = #{no}
-		]]>
-	</select>
 	
 	<!-- 삭제 -->
 	<delete id="delete" parameterType="Map">

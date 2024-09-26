@@ -30,7 +30,7 @@ public class GuestbookController {
 	// http://localhost:9000/api/persons
 	// http://localhost:3000/addlist
 	/* 리스트 (등록폼)*/
-	@GetMapping("/api/persons")
+	@GetMapping("/api/guests")
 	public JsonResult addList() {
 		System.out.println("GuestbookController.addList()");
 		
@@ -41,14 +41,14 @@ public class GuestbookController {
 	
 	// http://localhost:9000/api/persons
 	/* 등록 */
-	@PostMapping("/api/persons")
+	@PostMapping("/api/guests")
 	public JsonResult insert(@RequestBody GuestVo guestVo) {
 		
 		System.out.println("guestbookController.insert()");
 		
 		int count = guestbookService.exeInsertGuest(guestVo);
 
-		if(count != 0) {
+		if(count != 1) {
 			return JsonResult.fail("등록에 실패했습니다.");
 		}else { //등록됨
 			return JsonResult.success(count);
@@ -57,33 +57,15 @@ public class GuestbookController {
 	}
 	
 	// ---------------------------------------------------------------------------------
-	// http://localhost:9000/api/persons/{no}/delete
-	/* 삭제폼 */
-	@GetMapping("/api/persons/{no}/delete")
-	public JsonResult deleteForm(@PathVariable(value="no") int no) {
-		
-		System.out.println("guestbookController.deleteForm()");
-	
-		GuestVo guestVo = guestbookService.exeGetGuestOne(no);
-
-		if(guestVo == null) {
-			return JsonResult.fail("번호가 없습니다.");
-			
-		}else {
-			return JsonResult.success(guestVo);
-		}
-		
-	}
 	
 	// http://localhost:9000/api/persons/~
 	/* 삭제 */
-	@DeleteMapping("/api/persons/{no}")
-	public JsonResult delete(@PathVariable(value="no") int no , 
-							@PathVariable(value="password") String password) {
+	@DeleteMapping("/api/guests/{no}")
+	public JsonResult delete(@RequestBody GuestVo guestVo, @PathVariable(value = "no") int no) {
 		
 		System.out.println("guestbookController.delete()");
 		
-		int count = guestbookService.exeGuestDelete(no, password);
+		int count = guestbookService.exeGuestDelete(no, guestVo.getPassword());
 		
 		if(count != 1) {	// 실패 (삭제안됨)
 			return JsonResult.fail("해당번호가 없습니다.");
